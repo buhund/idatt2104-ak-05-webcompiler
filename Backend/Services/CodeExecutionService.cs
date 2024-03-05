@@ -1,35 +1,43 @@
-using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.IO;
 
-namespace Backend.Services
+namespace Backend.Services;
+
+public class CodeExecutionService
 {
-    public class CodeExecutionService
+    public async Task<string> CompileAndRunCCode(string code)
     {
-        public async Task<string> CompileAndRun(string code, string imageName)
+        // Ensuring the temp directory exists
+        var tempPath = Path.Combine(Path.GetFullPath("./temp"), "code.c");
+        Directory.CreateDirectory(Path.GetFullPath("./temp")); // Ensure the directory exists
+
+        await File.WriteAllTextAsync(tempPath, code);
+
+        var startInfo = new ProcessStartInfo
         {
-            // Save the code to a temporary file
-            var codePath = Path.Combine(Path.GetFullPath("./temp"), "code.c");
-            await File.WriteAllTextAsync(codePath, code);
+            FileName = "docker",
+            Arguments = $"run --rm --cpus=\"1.0\" --memory=\"512m\" -v \"{Path.GetDirectoryName(tempPath)}:/app\" gcc:latest gcc /app/code.c -o /app/output && /app/output",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
 
-            // Adjust the Docker command
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = "docker",
-                Arguments = $"run --rm -v {Path.GetFullPath("./temp")}:/app {imageName} sh -c 'gcc -o /app/output /app/code.c && /app/output'",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            };
-            using var process = new Process();
-            process.StartInfo = startInfo;
-            process.Start();
-            string output = await process.StandardOutput.ReadToEndAsync();
-            string error = await process.StandardError.ReadToEndAsync();
-            await process.WaitForExitAsync();
+        using var process = new Process { StartInfo = startInfo };
+        process.Start();
+        string output = await process.StandardOutput.ReadToEndAsync();
+        string error = await process.StandardError.ReadToEndAsync();
+        await process.WaitForExitAsync();
 
-            return string.IsNullOrEmpty(error) ? output : error;
+        // Consider cleaning up the temp file after execution
+        File.Delete(tempPath);
+
+        // Handling the output
+        if (!string.IsNullOrEmpty(error))
+        {
+            return $"Error: {error}";
         }
+        return output;
     }
 }

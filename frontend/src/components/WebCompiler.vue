@@ -6,10 +6,26 @@ const outputCode = ref('') // To store the output after compilation
 
 // Example function to simulate code compilation
 // This should be replaced with your actual compilation logic
-const compileCode = () => {
-  // Simulate a compilation result
-  outputCode.value = `Compiled version of: ${inputCode.value}`
+const compileCode = async () => {
+  try {
+    const response = await fetch('http://localhost:5240/api/compilation/compile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code: inputCode.value })
+    });
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+    const result = await response.text();
+    outputCode.value = result;
+  } catch (error) {
+    console.error("Failed to compile code:", error);
+    outputCode.value = error.toString();
+  }
 }
+
 </script>
 
 

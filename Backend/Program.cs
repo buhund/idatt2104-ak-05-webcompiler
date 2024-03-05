@@ -1,4 +1,4 @@
-using Backend.Services; // Add this line to reference your service
+using Backend.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

@@ -5,6 +5,9 @@ riderModule.iml
 /_ReSharper.Caches/
 .idea
 *.gitignore
+*.directory
+*.dockerignore
+*.kate-swp
 
 # Logs
 logs
