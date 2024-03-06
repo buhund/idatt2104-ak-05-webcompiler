@@ -10,6 +10,25 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        builder.Logging.AddConsole();
+
+        // Specify port for Kestrel
+        builder.WebHost.UseKestrel(serverOptions =>
+        {
+            serverOptions.ListenLocalhost(5240);
+        });
+
+        // SPecify CORS policy
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+        });
+
 
         // Add services to the container.
         builder.Services.AddAuthorization();
@@ -22,6 +41,7 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
+        app.UseCors("AllowAll");
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -30,7 +50,6 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
 
         app.UseAuthorization();
 

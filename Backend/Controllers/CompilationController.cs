@@ -10,6 +10,7 @@ public class CompilationController : ControllerBase
 {
     private readonly CodeExecutionService _executionService;
 
+    // Dependency Injection via constructor
     public CompilationController(CodeExecutionService executionService)
     {
         _executionService = executionService;
@@ -18,7 +19,6 @@ public class CompilationController : ControllerBase
     [HttpPost("compile")]
     public async Task<IActionResult> CompileAndRun([FromBody] CodeSubmission submission)
     {
-        // Input validation
         if (string.IsNullOrWhiteSpace(submission.Code))
         {
             return BadRequest("Code submission cannot be empty.");
@@ -31,7 +31,6 @@ public class CompilationController : ControllerBase
         }
         catch (Exception ex)
         {
-            // Log the exception here (e.g., using a logging framework or simply writing to console)
             Console.WriteLine(ex.ToString());
             return StatusCode(500, "An error occurred while processing your request.");
         }
@@ -40,5 +39,5 @@ public class CompilationController : ControllerBase
 
 public class CodeSubmission
 {
-    public string Code { get; set; }
+    public string? Code { get; set; }
 }
