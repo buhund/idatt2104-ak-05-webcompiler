@@ -1,3 +1,5 @@
+<!-- src/components/WebCompiler.vue -->
+
 <script setup lang="ts">
 import { ref } from 'vue'
 import { compileCode } from '../api.ts'
@@ -20,10 +22,12 @@ const triggerCompilation = async () => {
       outputCode.value = result; // Assuming the backend returns the compilation result directly
     } catch (error) {
       console.error("Failed to compile code:", error);
-      outputCode.value = "Compilation failed. Please try again.";
+      // Display the error message from the catch block of compileCode
+      outputCode.value = error.message;
     }
   }
 };
+
 
 
 </script>

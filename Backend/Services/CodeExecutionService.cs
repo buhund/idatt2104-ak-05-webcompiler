@@ -40,17 +40,11 @@ public class CodeExecutionService
             Console.WriteLine(error);
         }
 
-        // Cleaning up the temp file after execution
+        // Clean up temp file after execution
         File.Delete(tempPath);
 
         return string.IsNullOrEmpty(error) ? output : $"Error: {error}";
     }
 
-
-    // Test MacTest
-    // public async Task<string> CompileAndRunCCode(string code)
-    // {
-    //     return "Test output: compilation successful.";
-    // }
 
 }
