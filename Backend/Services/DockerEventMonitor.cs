@@ -1,3 +1,7 @@
+/**
+ * Docker events can be monitored locally in the terminal using the following command:
+ * docker events --filter 'event=create' --filter 'event=destroy'
+ */
 namespace Backend.Services;
 
 using System;

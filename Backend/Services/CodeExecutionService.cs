@@ -8,7 +8,6 @@ public class CodeExecutionService
 {
     public async Task<string> CompileAndRunCCode(string code)
     {
-
         // Launch Docker events listening in the background
         var eventsStartInfo = new ProcessStartInfo
         {
@@ -73,6 +72,5 @@ public class CodeExecutionService
 
         return string.IsNullOrEmpty(error) ? output : $"Error: {error}";
     }
-
 
 }
