@@ -1,39 +1,30 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { compileCode } from '../api.ts'
+
 
 const inputCode = ref('') // Store the input from user
 const outputCode = ref('') //Store the output after compilation
-const exampleCode = `#include<stdio.h>\n\nint main(void) {\n    printf("Hello World\\n");\n    return 0;\n}`
+
 const isLoading = ref(false); // Initial state is not loading
 
+// Example code for easy testing
+const exampleCode = `#include<stdio.h>\n\nint main(void) {\n    printf("Hello World\\n");\n    return 0;\n}`
 
-const compileCode = async () => {
-  isLoading.value = true; // Start loading
-  try {
-    const response = await fetch('http://localhost:5240/api/compilation/compile', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ code: inputCode.value })
-    });
-    if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
+
+
+const triggerCompilation = async () => {
+  if (inputCode.value.trim()) {
+    try {
+      const result = await compileCode(inputCode.value);
+      outputCode.value = result; // Assuming the backend returns the compilation result directly
+    } catch (error) {
+      console.error("Failed to compile code:", error);
+      outputCode.value = "Compilation failed. Please try again.";
     }
-    const contentType = response.headers.get("Content-Type");
-    if (contentType && contentType.indexOf("application/json") !== -1) {
-      const result = await response.json();
-      outputCode.value = result.message;
-    } else {
-      outputCode.value = await response.text();
-    }
-  } catch (error) {
-    console.error("Failed to compile code:", error);
-    outputCode.value = "Compilation failed. Please try again.";
-  } finally {
-    isLoading.value = false; // Stop loading regardless of the result
   }
-}
+};
+
 
 </script>
 
@@ -46,7 +37,7 @@ const compileCode = async () => {
     <textarea v-model="inputCode" placeholder="Type your code here..." rows="10" cols="50"></textarea>
 
     <!-- Compile Button -->
-    <button @click="compileCode" :disabled="isLoading">Compile Code</button>
+    <button @click="triggerCompilation" :disabled="isLoading">Compile Code</button>
     <div v-if="isLoading">Compiling...</div>
     <!-- TODO: Add some fancy loading spinny schnizzle ma hizzle -->
 

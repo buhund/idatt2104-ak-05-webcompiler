@@ -2,6 +2,7 @@ using Backend.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
 namespace Backend;
 
@@ -12,13 +13,8 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         builder.Logging.AddConsole();
 
-        // Specify port for Kestrel
-        builder.WebHost.UseKestrel(serverOptions =>
-        {
-            serverOptions.ListenLocalhost(5240);
-        });
 
-        // SPecify CORS policy
+        // Specify CORS policy
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowAll", builder =>
@@ -29,6 +25,13 @@ public class Program
             });
         });
 
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Backend API", Version = "v1" });
+            // Optional: Configure XML comments for Swagger if you're using them
+        });
+
+        builder.Services.AddControllers();
 
         // Add services to the container.
         builder.Services.AddAuthorization();
@@ -41,7 +44,6 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
-        app.UseCors("AllowAll");
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -50,7 +52,8 @@ public class Program
             app.UseSwaggerUI();
         }
 
-
+        app.UseCors("AllowAll");
+        app.MapControllers();
         app.UseAuthorization();
 
         app.Run();

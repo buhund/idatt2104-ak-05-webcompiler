@@ -16,12 +16,14 @@ public class CodeExecutionService
         var startInfo = new ProcessStartInfo
         {
             FileName = "docker",
-            Arguments = $"run --rm --cpus=\"1.0\" --memory=\"512m\" -v \"{Path.GetDirectoryName(tempPath)}:/app\" gcc:latest gcc /app/code.c -o /app/output && /app/output",
+            Arguments = $"run --rm --cpus=\"1.0\" --memory=\"512m\" -v \"{Path.GetDirectoryName(tempPath)}:/app\" gcc:latest /bin/bash -c \"gcc /app/code.c -o /app/compiled_program && /app/compiled_program\"",
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
             CreateNoWindow = true,
         };
+
+
 
         using var process = new Process { StartInfo = startInfo };
         process.Start();
@@ -38,7 +40,7 @@ public class CodeExecutionService
             Console.WriteLine(error);
         }
 
-        // Consider cleaning up the temp file after execution
+        // Cleaning up the temp file after execution
         File.Delete(tempPath);
 
         return string.IsNullOrEmpty(error) ? output : $"Error: {error}";
