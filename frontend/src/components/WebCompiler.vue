@@ -11,8 +11,8 @@ const outputCode = ref('') //Store the output after compilation
 const isLoading = ref(false); // Initial state is not loading
 
 // Example code for easy testing
-const exampleCode = `#include<stdio.h>\n\nint main(void) {\n    printf("Hello World\\n");\n    return 0;\n}`
-
+const exampleCode_01 = `#include<stdio.h>\n\nint main(void) {\n    printf("Hello World\\n");\n    return 0;\n}`
+const exampleCode_02 = `#include <stdio.h>\n#include <math.h>\n\nint isPrime(int number) {\n  if (number <= 1) return 0;\n  for (int i = 2; i <= sqrt(number); i++) {\n    if (number % i == 0) return 0; \n  }\n  return 1;\n}\n\nint main() {\n  int number = 29; // Input number to check\n  if (isPrime(number))\n    printf("%d is a prime number.\\n", number);\n  else\n    printf("%d is not a prime number.\\n", number);\n  return 0;\n}`;
 
 
 const triggerCompilation = async () => {
@@ -50,8 +50,12 @@ const triggerCompilation = async () => {
     <textarea v-model="outputCode" readonly rows="10" cols="50" class="output-area"></textarea>
 
     <div class="example-code">
-      <p>Example code:</p>
-      <textarea readonly :value="exampleCode" class="example"></textarea>
+      <p>Example code: Hello World</p>
+      <textarea readonly :value="exampleCode_01" class="example"></textarea>
+    </div>
+    <div class="example-code">
+      <p>Example code: Prime calculator</p>
+      <textarea readonly :value="exampleCode_02" class="example-02"></textarea>
     </div>
   </div>
 </template>
@@ -86,6 +90,14 @@ textarea {
 .example {
   width: 300px;
   height: 140px;
+  font-family: monospace;
+  overflow: auto;
+  white-space: pre;
+}
+
+.example-02 {
+  width: 500px;
+  height: 400px;
   font-family: monospace;
   overflow: auto;
   white-space: pre;
